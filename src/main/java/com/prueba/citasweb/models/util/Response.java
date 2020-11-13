@@ -4,14 +4,14 @@ import java.util.List;
 
 public class Response {
 	
-	private boolean isOk;
+	private boolean ok;
 	private String message;
 	private String error;
 	private Object result;
 	private List<?> results;
 	
-	public Response(boolean isOk, String message, Object result) {
-		this.isOk = isOk;
+	public Response(boolean ok, String message, Object result) {
+		this.ok = ok;
 		this.message = message;
 		this.result = result;
 	}
@@ -21,11 +21,11 @@ public class Response {
 	}
 
 	public boolean isOk() {
-		return isOk;
+		return ok;
 	}
 
-	public void setIsOk(boolean isOk) {
-		this.isOk = isOk;
+	public void setOk(boolean isOk) {
+		this.ok = isOk;
 	}
 
 	public String getMessage() {

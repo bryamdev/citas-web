@@ -15,6 +15,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "medicos")
 public class Medico {
@@ -32,12 +35,12 @@ public class Medico {
 	@NotNull
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tipoIdent_id")
+	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private TipoIdentificacion tipoIdentificacion;
 
 	@NotEmpty
 	private String numTarjetaProfesional;
 	
-	@NotEmpty
 	private Integer aniosExperiencia;
 	
 	@NotEmpty
@@ -45,10 +48,12 @@ public class Medico {
 	
 	@NotNull
 	@Temporal(TemporalType.TIME)
+	@JsonFormat(pattern = "HH:mm:ss")
 	private Date horaInicioAtencion;
 	
 	@NotNull
 	@Temporal(TemporalType.TIME)
+	@JsonFormat(pattern = "HH:mm:ss")
 	private Date horaFinAtencion;
 	
 	
