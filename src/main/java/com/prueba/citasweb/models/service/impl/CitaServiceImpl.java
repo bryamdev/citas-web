@@ -1,5 +1,6 @@
 package com.prueba.citasweb.models.service.impl;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class CitaServiceImpl implements ICitaService{
 
 	@Transactional
 	@Override
-	public Cita save(Cita cita) throws NotFoundException {
+	public Cita save(Cita cita){
 		
 		validarCita(cita);
 		
@@ -53,6 +54,7 @@ public class CitaServiceImpl implements ICitaService{
 	public void delete(Long id) {
 		citaDao.deleteById(id);
 	}
+	
 	
 	public void validarCita(Cita cita) {
 		
@@ -66,6 +68,28 @@ public class CitaServiceImpl implements ICitaService{
 		if(paciente == null) {
 			throw new NotFoundException("No existe un paciente con id: " + cita.getPaciente().getId());
 		}
+		
+		Integer horaMinimaAtencion = medico.getHoraInicioAtencion().getHours();
+		Integer horaMaximaAtencion = medico.getHoraFinAtencion().getHours();
+		
+		System.out.println("Minima: " + medico.getHoraInicioAtencion());
+		System.out.println("Maxima: " + medico.getHoraFinAtencion());
+		
+		
+		if(cita.getFechaHora().get(Calendar.HOUR) < horaMinimaAtencion || cita.getFechaHora().get(Calendar.HOUR) > (horaMaximaAtencion - 1)){
+			System.out.println("El médico " + medico.getNombre() + " no atiende a esa hora!");
+		}
+		
+				
+		System.out.println("Hora cita: " + cita.getFechaHora().getTime().getHours());
+		System.out.println("Hora cita(DATE): " + cita.getFechaHora().getTime());
+		
+		Cita citaOld = findById(cita.getId());
+		
+		System.out.println("Hora cita OLD: " + citaOld.getFechaHora().getTime().getHours());
+		System.out.println("Hora cita OLD(DATE): " + citaOld.getFechaHora().getTime());
+		
+
 		
 	}
 

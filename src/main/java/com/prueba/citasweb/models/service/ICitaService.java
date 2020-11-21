@@ -3,7 +3,6 @@ package com.prueba.citasweb.models.service;
 import java.util.List;
 
 import com.prueba.citasweb.models.entity.Cita;
-import com.prueba.citasweb.models.exceptions.NotFoundException;
 
 public interface ICitaService {
 	
@@ -11,7 +10,7 @@ public interface ICitaService {
 	
 	public Cita findById(Long id);
 	
-	public Cita save(Cita cita) throws NotFoundException;
+	public Cita save(Cita cita);
 	
 	public void delete(Long id);
 
