@@ -1,9 +1,7 @@
 package com.prueba.citasweb.models.entity;
 
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.util.Date;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,7 +29,7 @@ public class Cita {
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "America/Bogota")
-	private Calendar fechaHora;
+	private Date fechaHora;
 	
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -52,24 +49,7 @@ public class Cita {
 	public Cita() {
 		
 	}
-	
-	@PostConstruct
-	private void postConstruct() {
-		//setCalendarTimeZone();
-	}
-	
-	@PrePersist
-	public void prePersist() {
-		//setCalendarTimeZone();
-		TimeZone tz = TimeZone.getDefault();
-		this.fechaHora.setTimeZone(tz);
-	}
-	
-	private void setCalendarTimeZone() {
-		TimeZone tz = TimeZone.getTimeZone("America/Bogota");
-		this.fechaHora.setTimeZone(tz);
-	}
-	
+		
 	public Long getId() {
 		return id;
 	}
@@ -78,11 +58,11 @@ public class Cita {
 		this.id = id;
 	}
 
-	public Calendar getFechaHora() {
+	public Date getFechaHora() {
 		return fechaHora;
 	}
 
-	public void setFechaHora(Calendar fechaHora) {
+	public void setFechaHora(Date fechaHora) {
 		this.fechaHora = fechaHora;
 	}
 
@@ -109,8 +89,6 @@ public class Cita {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	
-	
-	
+		
 
 }
