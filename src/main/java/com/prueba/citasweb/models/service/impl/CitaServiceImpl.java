@@ -15,6 +15,7 @@ import com.prueba.citasweb.models.exceptions.NotFoundException;
 import com.prueba.citasweb.models.service.ICitaService;
 import com.prueba.citasweb.models.service.IMedicoService;
 import com.prueba.citasweb.models.service.IPacienteService;
+import com.prueba.citasweb.models.util.DateFormaterUtil;
 
 @Service
 public class CitaServiceImpl implements ICitaService{
@@ -55,11 +56,13 @@ public class CitaServiceImpl implements ICitaService{
 		citaDao.deleteById(id);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void validarCita(Cita cita) {
 				
 		Medico medico = medicoService.getById(cita.getMedico().getId());
 		Paciente paciente = pacienteService.findById(cita.getPaciente().getId());
+		DateFormaterUtil format = new DateFormaterUtil();
+		
+		System.out.println("ID de la cita: " + cita.getId());
 		
 		if(medico == null) {
 			throw new NotFoundException("No existe un médico con id: " + cita.getMedico().getId());
@@ -69,60 +72,66 @@ public class CitaServiceImpl implements ICitaService{
 			throw new NotFoundException("No existe un paciente con id: " + cita.getPaciente().getId());
 		}
 		
-		Calendar citaNueva = Calendar.getInstance();
-		citaNueva.setTime(cita.getFechaHora());
+		int horaCitaNueva = format.getHourOfDate(cita.getFechaHora());
 		
-		int diaCitaNueva = citaNueva.get(Calendar.DAY_OF_MONTH);
-		int mesCitaNueva = citaNueva.get(Calendar.MONTH);
-		int anioCitaNueva = citaNueva.get(Calendar.YEAR);
-		int horaCitaNueva = citaNueva.get(Calendar.HOUR);
-		
-		int horaMinimaAtencion = medico.getHoraInicioAtencion().getHours();
-		int horaMaximaAtencion = medico.getHoraFinAtencion().getHours();
+		int horaMinimaAtencion = format.getHourOfDate(medico.getHoraInicioAtencion());
+		int horaMaximaAtencion = format.getHourOfDate(medico.getHoraFinAtencion());
 		
 		System.out.println("Minima: " + medico.getHoraInicioAtencion());
 		System.out.println("Maxima: " + medico.getHoraFinAtencion());
+		System.out.println("Hora cita: " + horaCitaNueva);
 		
 		
-		if(citaNueva.get(Calendar.HOUR) < horaMinimaAtencion || citaNueva.get(Calendar.HOUR) > (horaMaximaAtencion - 1)){
+		if(horaCitaNueva < horaMinimaAtencion || horaCitaNueva > (horaMaximaAtencion - 1)){
 			System.out.println("El médico " + medico.getNombre() + " no atiende a esa hora!");
+			throw new RuntimeException("El médico " + medico.getNombre() + " no atiende a esa hora!");
 		}
 		
-		List<Cita> citas = findAll();
 		
-		for(Cita c: citas) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(c.getFechaHora());
+		String fecha = format.dateToString(cita.getFechaHora()) + "%";
+		System.out.println("Fecha a texto con util: " + fecha);
+		List<Cita> citasDia = citaDao.findCitasDia(fecha);
+		
+		
+		if(citasDia.size() > 0) {
+			System.out.println("SIII SE ENCONTRARON CITAS CON EL METODO NUEVO");
+			for(Cita c : citasDia) {
+				System.out.println(c.getFechaHora());
+			}
 			
-			int dia = cal.get(Calendar.DAY_OF_MONTH);
-			int mes = cal.get(Calendar.MONTH);
-			int anio = cal.get(Calendar.YEAR);
-			int hora = cal.get(Calendar.HOUR);
+		}else {
+			System.out.println("NOOO SE ENCONTRARON CITAS CON EL METODO NUEVO");
+		}
+		
+		
+		for(Cita c: citasDia) {
 			
-			System.out.println(dia + " - " + mes + " - " + anio);
-						
-			//fecha de la cita a guardar
+			int hora = format.getHourOfDate(c.getFechaHora());			
 			
-			System.out.println("Nueva: " + citaNueva.get(Calendar.DAY_OF_MONTH) + " - " + citaNueva.get(Calendar.MONTH) + " - " + citaNueva.get(Calendar.YEAR));
+			//Solo para nuevos
+			if(cita.getMedico().getId() == c.getMedico().getId() && cita.getPaciente().getId() == c.getPaciente().getId()) {
+				throw new RuntimeException("El medico y paciente ya tienen una cita para ese dia!");
+			}
 			
+			if(cita.getMedico().getId() == c.getMedico().getId() && horaCitaNueva == hora) {
+				throw new RuntimeException("El/la médico " + c.getMedico().getNombre() + " ya tiene una cita agendada a las " + hora +  " para ese dia");
+			}
 			
-			
-			if(diaCitaNueva == dia && mesCitaNueva == mes && anioCitaNueva == anio) {
-				System.out.println("Si hay cita ese dia, id: " + c.getId());
-				
-				if(cita.getMedico().getId() == c.getMedico().getId() && cita.getPaciente().getId() == c.getPaciente().getId()) {
-					throw new RuntimeException("El medico y paciente ya tienen una cita para ese dia!");
-				}
-				
+			/*
+			if(actualizacion) {
 				if(cita.getMedico().getId() == c.getMedico().getId() && horaCitaNueva == hora) {
 					throw new RuntimeException("El/la médico " + c.getMedico().getNombre() + " ya tiene una cita agendada a las " + hora +  " para ese dia");
 				}
-				
 			}else {
-				System.out.println("No hay citas ese dia");				
+				if(cita.getMedico().getId() == c.getMedico().getId() && horaCitaNueva == hora) {
+					throw new RuntimeException("El/la médico " + c.getMedico().getNombre() + " ya tiene una cita agendada a las " + hora +  " para ese dia");
+				}
 			}
+			*/
 			
 		}
+		
+		
 				
 	}
 

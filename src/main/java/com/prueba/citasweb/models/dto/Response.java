@@ -1,4 +1,4 @@
-package com.prueba.citasweb.models.util;
+package com.prueba.citasweb.models.dto;
 
 import java.util.List;
 

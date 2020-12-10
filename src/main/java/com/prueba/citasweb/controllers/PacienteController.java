@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prueba.citasweb.models.dto.Response;
 import com.prueba.citasweb.models.entity.Paciente;
 import com.prueba.citasweb.models.service.IPacienteService;
-import com.prueba.citasweb.models.util.Response;
 
 @RestController
 @RequestMapping("/api/rest/v1/pacientes")

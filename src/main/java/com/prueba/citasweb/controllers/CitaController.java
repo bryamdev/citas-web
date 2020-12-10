@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.prueba.citasweb.models.dao.ICitaDao;
+import com.prueba.citasweb.models.dto.Response;
 import com.prueba.citasweb.models.entity.Cita;
 import com.prueba.citasweb.models.exceptions.NotFoundException;
 import com.prueba.citasweb.models.service.ICitaService;
-import com.prueba.citasweb.models.util.Response;
 
 @RestController
 @RequestMapping("/api/rest/v1/citas")
@@ -29,9 +27,6 @@ public class CitaController {
 
 	@Autowired
 	private ICitaService citaService;
-	
-	@Autowired
-	private ICitaDao citaDao;
 	
 	@GetMapping("/listar")
 	public List<Cita> getCitas(){
@@ -102,20 +97,7 @@ public class CitaController {
 			response.setMessage("No existe una cita con id: " + id);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);			
 		}
-		
-		List<Cita> citasFecha = citaDao.findByFechaHora(cita.getFechaHora());
-		
-		if(citasFecha.size() > 0) {
-			System.out.println("SI se encontró");
-			int cont = 1;
-			for(Cita c: citasFecha) {
-				System.out.println(cont++ +")-> " + c.getDescripcion());
-			}
-		}else{
-			System.out.println("NO se encontrö cita para: " + cita.getFechaHora());
-		}
-		
-		
+				
 		if(result.hasErrors()) {
 			
 			List<String> errors = result.getFieldErrors()
