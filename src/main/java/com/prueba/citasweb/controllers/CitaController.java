@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -129,9 +130,31 @@ public class CitaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 		
-				
-		
 	}
 	
+	@DeleteMapping("/eliminar/{id}")
+	public ResponseEntity<Response> eliminarCita(@PathVariable Long id){
+		
+		Response response = new Response();
+		Cita cita = citaService.findById(id);
+		
+		if(cita == null) {
+			response.setMessage("No existe una cita con id: " + id);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);	
+		}
+		
+		try {
+			citaService.delete(id);
+			response.setMessage("Cita eliminada con éxito!");
+			response.setOk(true);
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+			
+		}catch(Exception e) {
+			response.setMessage("Error al intentar eliminar la cita");
+			response.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+		
+	}
 	
 }
