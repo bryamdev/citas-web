@@ -61,7 +61,7 @@ public class CitaServiceImpl implements ICitaService{
 		Paciente paciente = pacienteService.findById(cita.getPaciente().getId());
 		DateFormaterUtil format = new DateFormaterUtil();
 		
-		System.out.println("ID de la cita: " + cita.getId());
+		//System.out.println("ID de la cita: " + cita.getId());
 		
 		if(medico == null) {
 			throw new NotFoundException("No existe un médico con id: " + cita.getMedico().getId());
@@ -76,40 +76,27 @@ public class CitaServiceImpl implements ICitaService{
 		int horaMinimaAtencion = format.getHourOfDate(medico.getHoraInicioAtencion());
 		int horaMaximaAtencion = format.getHourOfDate(medico.getHoraFinAtencion());
 		
-		System.out.println("Minima: " + medico.getHoraInicioAtencion());
-		System.out.println("Maxima: " + medico.getHoraFinAtencion());
-		System.out.println("Hora cita: " + horaCitaNueva);
+		//System.out.println("Minima: " + medico.getHoraInicioAtencion());
+		//System.out.println("Maxima: " + medico.getHoraFinAtencion());
+		//System.out.println("Hora cita: " + horaCitaNueva);
 		
 		
 		if(horaCitaNueva < horaMinimaAtencion || horaCitaNueva > (horaMaximaAtencion - 1)){
-			System.out.println("El médico " + medico.getNombre() + " no atiende a esa hora!");
+			//System.out.println("El médico " + medico.getNombre() + " no atiende a esa hora!");
 			throw new RuntimeException("El médico " + medico.getNombre() + " no atiende a esa hora!");
 		}
 		
 		
 		String fecha = format.dateToString(cita.getFechaHora()) + "%";
-		System.out.println("Fecha a texto con util: " + fecha);
+		//System.out.println("Fecha a texto con util: " + fecha);
 		List<Cita> citasDia = citaDao.findCitasDia(fecha);
 		
 		
-		if(citasDia.size() > 0) {
-			System.out.println("SIII SE ENCONTRARON CITAS CON EL METODO NUEVO");
-			for(Cita c : citasDia) {
-				System.out.println(c.getFechaHora());
-			}
+		for (Cita c : citasDia) {
+			int hora = format.getHourOfDate(c.getFechaHora());
 			
-		}else {
-			System.out.println("NOOO SE ENCONTRARON CITAS CON EL METODO NUEVO");
-		}
-		
-		
-		if(cita.getId() == null || cita.getId() == 0) {
-			System.out.println("Es una cita nueva");
-			
-			for (Cita c : citasDia) {
-				int hora = format.getHourOfDate(c.getFechaHora());			
+			if(cita.getId() == null || cita.getId() == 0) {
 				
-				//Solo para nuevos
 				if(cita.getMedico().getId() == c.getMedico().getId() && cita.getPaciente().getId() == c.getPaciente().getId()) {
 					throw new RuntimeException("El medico y paciente ya tienen una cita para ese dia!");
 				}
@@ -117,15 +104,8 @@ public class CitaServiceImpl implements ICitaService{
 				if(cita.getMedico().getId() == c.getMedico().getId() && horaCitaNueva == hora) {
 					throw new RuntimeException("El/la médico " + c.getMedico().getNombre() + " ya tiene una cita agendada a las " + hora +  " para ese dia");
 				}
-			}
-			
-		}else {
-			System.out.println("Es una actualización");
-			
-			for (Cita c : citasDia) {
-				int hora = format.getHourOfDate(c.getFechaHora());			
+			}else {
 				
-				//Solo para nuevos
 				if(cita.getMedico().getId() == c.getMedico().getId() && cita.getPaciente().getId() == c.getPaciente().getId() && c.getId() != cita.getId()) {
 					throw new RuntimeException("El medico y paciente ya tienen una cita para ese dia!");
 				}
@@ -133,8 +113,9 @@ public class CitaServiceImpl implements ICitaService{
 				if(cita.getMedico().getId() == c.getMedico().getId() && horaCitaNueva == hora && c.getId() != cita.getId()) {
 					throw new RuntimeException("El/la médico " + c.getMedico().getNombre() + " ya tiene una cita agendada a las " + hora +  " para ese dia");
 				}
-			}
+			}	
 		}
+		
 		
 				
 	}
